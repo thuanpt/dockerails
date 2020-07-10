@@ -13,7 +13,7 @@ services:
     expose:
       - '3306'
     volumes:
-      - ./db/mysql/data:/var/lib/mysql
+      - ./data:/var/lib/mysql
     logging:
       driver: none
     ports:
