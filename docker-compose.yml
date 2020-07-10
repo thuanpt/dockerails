@@ -1,0 +1,83 @@
+version: "3.7"
+
+services:
+  db:
+    container_name: dockerails-mysql
+    image: "mysql:5.7"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+        - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - ./db/mysql/data:/var/lib/mysql
+    logging:
+      driver: none
+    ports:
+      - "33061:3306"
+  redis:
+    container_name: dockerails-redis
+    image: redis:4.0-alpine
+    command: redis-server
+    volumes:
+      - redis:/data
+    ports:
+      - 6379
+    logging:
+      driver: none
+  api:
+    container_name: dockerails-api
+    build:
+      context: ./Project-Api
+    command: bundle exec rails s -p 3000 -e development -b '0.0.0.0'
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      DB_NAME: test
+      DB_PORT: 3306
+      DB_HOST: db
+      RAILS_ENV: development
+      RAILS_MAX_THREADS: 5
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      BUNDLE_PATH: /bundle
+    volumes:
+      - ./Project-Api/:/project-api
+      - bundle:/bundle
+    ports:
+      - "3002:3000"
+    depends_on:
+      - "db"
+      - "redis"
+  admin:
+    container_name: dockerails-admin
+    build:
+      context: ./Project-Admin
+    command: bundle exec rails s -p 8000 -e development -b '0.0.0.0'
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      DB_NAME: 
+      
+      DB_PORT: 3306
+      DB_HOST: db
+      RAILS_ENV: development
+      RAILS_MAX_THREADS: 5
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      BUNDLE_PATH: /bundle
+    volumes:
+      - ./Project-Admin/:/project-admin
+      - bundle:/bundle
+    ports:
+      - "3000:8000"
+    depends_on:
+      - "db"
+      - "redis"
+volumes:
+  db:
+  bundle:
+  redis:
