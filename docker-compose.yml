@@ -60,8 +60,7 @@ services:
     environment:
       DB_USERNAME: root
       DB_PASSWORD: root
-      DB_NAME: 
-      
+      DB_NAME: test
       DB_PORT: 3306
       DB_HOST: db
       RAILS_ENV: development
